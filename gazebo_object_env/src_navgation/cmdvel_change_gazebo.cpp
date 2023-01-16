@@ -69,7 +69,7 @@ int main(int argc, char** argv){
   ros::ServiceClient client = n.serviceClient<gazebo_msgs::SetModelState>("/gazebo/set_model_state");
   current_time = ros::Time::now();
   last_time = ros::Time::now();
-  ros::Rate r(10);
+  ros::Rate rate(20);
 
   // 2.初始化参数
   pose_with_covariance.pose.position = geometry_msgs::Point();
@@ -149,112 +149,22 @@ int main(int argc, char** argv){
       geometry_msgs::Quaternion Quaternion_odom_robot = tf::createQuaternionMsgFromYaw(yaw); //since all odometry is 6DOF we'll need a quaternion created from yaw
       footprint__pose.pose.orientation = Quaternion_odom_robot;
 
-      // 5.2 更新速度
-      double vx = mCmd_vel.linear.x;
-      double vy = 0.0;
-      double vth = mCmd_vel.angular.z;
-      
-
-      // 5.4 发布机器人底盘和odom的tf变换
-      geometry_msgs::TransformStamped odom_trans;
-      odom_trans.header.stamp = current_time;
-      odom_trans.header.frame_id = "odom";
-      odom_trans.child_frame_id = "base_link";
-      odom_trans.transform.translation.x = footprint__pose.pose.position.x;
-      odom_trans.transform.translation.y = footprint__pose.pose.position.y;
-      odom_trans.transform.translation.z = 0.0;
-      odom_trans.transform.rotation = footprint__pose.pose.orientation; //Quaternion_odom_robot;
-      // odom_broadcaster.sendTransform(odom_trans);
-
-      // 5.5 发布camera_depth_optical_frame和base_link的tf变换
-      geometry_msgs::TransformStamped camera_trans;
-      camera_trans.header.stamp = current_time;
-      camera_trans.header.frame_id = "base_link";
-      camera_trans.child_frame_id = "camera_depth_optical_frame";
-      camera_trans.transform.translation.x = 0.0;
-      camera_trans.transform.translation.y = 0.0;
-      camera_trans.transform.translation.z = 1.2;
-      geometry_msgs::Quaternion Quaternion_robot_camera;
-      Quaternion_robot_camera.x = 0.606109;
-      Quaternion_robot_camera.y = -0.606109;
-      Quaternion_robot_camera.z = 0.364187;
-      Quaternion_robot_camera.w = -0.364187;
-      camera_trans.transform.rotation = Quaternion_robot_camera;
-      // camera_broadcaster.sendTransform(camera_trans);
-
-      // 5.6 发布里程计信息【似乎没什么用】
-      // nav_msgs::Odometry odom;
-      // odom.header.stamp = current_time;
-      // odom.header.frame_id = "odom";
-      // odom.pose.pose.position.x = x;
-      // odom.pose.pose.position.y = y;
-      // odom.pose.pose.position.z = 0.0;
-      // odom.pose.pose.orientation = Quaternion_odom_robot;
-      // odom.child_frame_id = "base_link";
-      // odom.twist.twist.linear.x = vx;
-      // odom.twist.twist.linear.y = vy;
-      // odom.twist.twist.angular.z = vth;
-      // odom_pub.publish(odom);
-      // last_time = current_time;
-      // pose_with_covariance.pose = odom.pose.pose;
-
 
       // 5.7 更新gazebo的模型位置
-      objstate.request.model_state.pose.position.x = odom_trans.transform.translation.x;// + initx;
-      objstate.request.model_state.pose.position.y = odom_trans.transform.translation.y;// + inity;
+      objstate.request.model_state.pose.position.x = footprint__pose.pose.position.x;// + initx;
+      objstate.request.model_state.pose.position.y = footprint__pose.pose.position.y;// + inity;
       objstate.request.model_state.pose.position.z = 1.0;
-      objstate.request.model_state.pose.orientation.w = odom_trans.transform.rotation.w;
-      objstate.request.model_state.pose.orientation.x = odom_trans.transform.rotation.x;
-      objstate.request.model_state.pose.orientation.y = odom_trans.transform.rotation.y;
-      objstate.request.model_state.pose.orientation.z = odom_trans.transform.rotation.z;
+      objstate.request.model_state.pose.orientation.w = footprint__pose.pose.orientation.w;
+      objstate.request.model_state.pose.orientation.x = footprint__pose.pose.orientation.x;
+      objstate.request.model_state.pose.orientation.y = footprint__pose.pose.orientation.y;
+      objstate.request.model_state.pose.orientation.z = footprint__pose.pose.orientation.z;
       // gazebo_msgs::SetModelState 
       objstate = baselink_to_camerabody_to_gazebo(objstate);
       client.call(objstate);
       
     }
-    else if(bInit && !bVel){
-      ROS_INFO("running2");
-      // 6.1 更新位姿
-      double x = footprint__pose.pose.position.x ;
-      double y = footprint__pose.pose.position.y ;
-      double yaw = tf::getYaw(footprint__pose.pose.orientation);
-      geometry_msgs::Quaternion Quaternion_odom_robot = tf::createQuaternionMsgFromYaw(yaw); //since all odometry is 6DOF we'll need a quaternion created from yaw
-      std::cout<<"x:"<<x<<",y:"<<y<<std::endl;
-      std::cout<<"x1:"<<footprint__pose.pose.position.x<<",y1:"<<footprint__pose.pose.position.y<<std::endl;
-
-      
-      // 5.2 发布机器人底盘和odom的tf变换
-      current_time = ros::Time::now();
-
-      geometry_msgs::TransformStamped odom_trans;
-      odom_trans.header.stamp = current_time;
-      odom_trans.header.frame_id = "odom";
-      odom_trans.child_frame_id = "base_link";
-      odom_trans.transform.translation.x = x;
-      odom_trans.transform.translation.y = y;
-      odom_trans.transform.translation.z = 0.0;
-      odom_trans.transform.rotation = Quaternion_odom_robot;
-      // odom_broadcaster.sendTransform(odom_trans);
-
-      // 5.3 发布camera_depth_optical_frame和base_link的tf变换
-      geometry_msgs::TransformStamped camera_trans;
-      camera_trans.header.stamp = current_time;
-      camera_trans.header.frame_id = "base_link";
-      camera_trans.child_frame_id = "camera_depth_optical_frame";
-      camera_trans.transform.translation.x = 0.0;
-      camera_trans.transform.translation.y = 0.0;
-      camera_trans.transform.translation.z = 1.2;
-      geometry_msgs::Quaternion Quaternion_robot_camera;
-      Quaternion_robot_camera.w = -0.364187;
-      Quaternion_robot_camera.x = 0.606109;
-      Quaternion_robot_camera.y = -0.606109;
-      Quaternion_robot_camera.z = 0.364187;
-      camera_trans.transform.rotation = Quaternion_robot_camera;
-      // camera_broadcaster.sendTransform(camera_trans);
-      
-    }
 
     ros::spinOnce();               // check for incoming messages
-    r.sleep();
+    rate.sleep();
   }
 }

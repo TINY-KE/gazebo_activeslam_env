@@ -158,6 +158,8 @@ target_link_libraries(map_odom_tf_publisher  ${catkin_LIBRARIES})
 add_executable(odom_publisher src_navgation/odom_publisher.cpp)
 target_link_libraries(odom_publisher ${catkin_LIBRARIES})
 
+add_executable(cmdvel_change_gazebo src_navgation/cmdvel_change_gazebo.cpp)
+target_link_libraries(cmdvel_change_gazebo ${catkin_LIBRARIES})
 
 #############
 ## Install ##
