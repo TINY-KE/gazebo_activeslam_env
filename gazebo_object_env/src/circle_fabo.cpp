@@ -25,11 +25,11 @@ int main(int argc, char **argv)
     gazebo_msgs::SetModelState objstate;
     
     double distance = 2.0;
-    double height = 1.0;
+    double height = -0.01;
     double angle = 0;
     double center_x = distance;
     double center_y = 0;
-    objstate.request.model_state.model_name = "";//"acircles_pattern_0"  mobile_base;
+    objstate.request.model_state.model_name = "mrobot";//"acircles_pattern_0"  mobile_base;
     objstate.request.model_state.pose.position.x = distance*cos(angle) - center_x;
     objstate.request.model_state.pose.position.y = distance*sin(angle) - center_y;
     objstate.request.model_state.pose.position.z = height;
@@ -53,7 +53,7 @@ int main(int argc, char **argv)
                 <<",qy:"<<q_init.y()
                 <<",qz:"<<q_init.z()
                 <<std::endl;
-    client.call(objstate);
+    // client.call(objstate);
     Eigen::Quaterniond q_world_to_camerabody;
     q_world_to_camerabody.w() = q_init.w();
     q_world_to_camerabody.x() = q_init.x();
@@ -83,7 +83,6 @@ int main(int argc, char **argv)
         angle = cout/180.0*M_PI ;
         double x = distance*cos(angle);
         double y = distance*sin(angle);
-        double z = height;
         double mean_x=0, mean_y=0;
         //cv::Mat view = (cv::Mat_<float>(3, 1) << mean_x-x, mean_y-y, 0);
         //double angle = atan( (mean_y-y)/(mean_x-x) );
@@ -94,11 +93,11 @@ int main(int argc, char **argv)
         //// Eigen::AngleAxisd rotation_vector (angle, Eigen::Vector3d(0,0,1));
         //// Eigen::Matrix3d rotation_matrix = rotation_vector.toRotationMatrix();
         //// cv::Mat rotate_mat = Converter::toCvMat(rotation_matrix);
-        tf::Quaternion q = tf::createQuaternionFromRPY(0, pitch/180.0*M_PI, angle+M_PI);
+        tf::Quaternion q = tf::createQuaternionFromRPY(0, 0, angle+M_PI);
 
         objstate.request.model_state.pose.position.x = x - center_x;
         objstate.request.model_state.pose.position.y = y - center_y;
-        objstate.request.model_state.pose.position.z = z;
+        objstate.request.model_state.pose.position.z = height;
         objstate.request.model_state.pose.orientation.w = q.w();
         objstate.request.model_state.pose.orientation.x = q.x();
         objstate.request.model_state.pose.orientation.y = q.y();

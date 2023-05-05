@@ -17,7 +17,13 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   tf
 )
+find_package(Eigen3  REQUIRED)
+find_package(gazebo REQUIRED)
 
+include_directories(
+   ${GAZEBO_INCLUDE_DIRS}
+   ${EIGEN3_INCLUDE_DIR}
+   )
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -143,6 +149,11 @@ target_link_libraries(circle
    ${catkin_LIBRARIES}
 )
 
+add_executable(circle_fabo src/circle_fabo.cpp)
+target_link_libraries(circle_fabo
+   ${catkin_LIBRARIES}
+)
+
 add_executable(rectangle src/rectangle.cpp)
 target_link_libraries(rectangle
    ${catkin_LIBRARIES}
@@ -161,6 +172,13 @@ target_link_libraries(odom_publisher ${catkin_LIBRARIES})
 add_executable(cmdvel_change_gazebo src_navgation/cmdvel_change_gazebo.cpp)
 target_link_libraries(cmdvel_change_gazebo ${catkin_LIBRARIES})
 
+
+add_executable(gazebo_world_parser src/gazebo_world_parser.cpp)
+target_link_libraries(gazebo_world_parser
+   ${catkin_LIBRARIES}
+   ${GAZEBO_LIBRARIES}
+   ${EIGEN3_LIBS}
+)
 #############
 ## Install ##
 #############

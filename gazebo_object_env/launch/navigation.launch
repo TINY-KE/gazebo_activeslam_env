@@ -2,9 +2,9 @@
 
    <!-- <master auto="start"/> -->
    
-   <!-- <include file="$(find gazebo_gridmapping)/launch/mapping.launch"></include>
+   <include file="$(find gazebo_gridmapping)/launch/mapping.launch"></include>
    
-   <node name="map_odom_tf_publisher" pkg="gazebo_object_env" type="map_odom_tf_publisher"/> -->
+   <!-- <node name="map_odom_tf_publisher" pkg="gazebo_object_env" type="map_odom_tf_publisher"/>  已经在run_gazebo.launch中运行-->
 
    <node name="cmdvel_change_gazebo" pkg="gazebo_object_env" type="cmdvel_change_gazebo"/>
    
