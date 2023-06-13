@@ -159,6 +159,10 @@ target_link_libraries(rectangle
    ${catkin_LIBRARIES}
 )
 
+add_executable(funnel src/funnel.cpp)
+target_link_libraries(funnel
+   ${catkin_LIBRARIES}
+)
 
 add_executable(map_odom_tf_publisher src_navgation/map_odom_tf_publisher.cpp)
 target_link_libraries(map_odom_tf_publisher  ${catkin_LIBRARIES})

@@ -29,6 +29,7 @@ ros::Publisher publisher_object;
 //         return newp;
 // }
 
+double angle_tune = 0;
 class object{
     
     public:
@@ -55,7 +56,7 @@ geometry_msgs::Point corner_to_marker(geometry_msgs::Point& oldp, object& ob){
         
         // 计算旋转矩阵
         Eigen::Matrix3d rotation_matrix;
-        rotation_matrix = Eigen::AngleAxisd(ob.yaw, Eigen::Vector3d::UnitZ());
+        rotation_matrix = Eigen::AngleAxisd(ob.yaw + angle_tune, Eigen::Vector3d::UnitZ());
                         // * Eigen::AngleAxisd(ob.pitch, Eigen::Vector3d::UnitY())
                         // * Eigen::AngleAxisd(ob.roll, Eigen::Vector3d::UnitX());
 
@@ -92,18 +93,26 @@ geometry_msgs::Point corner_to_marker(geometry_msgs::Point& oldp, object& ob){
 }
 
 int main(int argc, char **argv)
-{
+{   std::string worldfile;
+    if(argc != 2){
+        std::cout<<"【注意】：没有输入被读取的world文件地址"<<std::endl;    
+        std::cout<<"读取默认文件：/home/zhjd/active_eao/src/gazebo_activeslam_env/fabo_moveit_gazebo/ASLAM_gazebo_world/world/nine_highdesk.world"<<std::endl;    
+        worldfile = "/home/zhjd/active_eao/src/gazebo_activeslam_env/fabo_moveit_gazebo/ASLAM_gazebo_world/world/nine_highdesk.world";    
+    }
+    else
+        worldfile = argv[1];
+        
     std::vector<object> obs;
     ros::init ( argc, argv, "gazebo_world_parser" );
     ros::NodeHandle nh;
-    publisher_object = nh.advertise<visualization_msgs::Marker>("objectmap", 1000);
+    publisher_object = nh.advertise<visualization_msgs::Marker>("objectmap_groudtruth", 1000);
     
     // Load gazebo
     gazebo::setupServer(argc, argv);
 
     // Create a world and get the models
     // gazebo::physics::WorldPtr world = gazebo::physics::get_world();
-    gazebo::physics::WorldPtr world = gazebo::loadWorld("/home/zhjd/workspace/ws_huchunxu/src/ros_exploring/my_mobilearm/my_gazebo/world/nine_highdesk.world");//worlds/empty.world
+    gazebo::physics::WorldPtr world = gazebo::loadWorld("/home/zhjd/active_eao/src/gazebo_activeslam_env/fabo_moveit_gazebo/ASLAM_gazebo_world/world/nine_highdesk.world");//worlds/empty.world
     gazebo::physics::Model_V models = world->Models();
     
 

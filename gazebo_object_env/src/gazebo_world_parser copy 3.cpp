@@ -103,7 +103,7 @@ int main(int argc, char **argv)
 
     // Create a world and get the models
     // gazebo::physics::WorldPtr world = gazebo::physics::get_world();
-    gazebo::physics::WorldPtr world = gazebo::loadWorld("/home/zhjd/workspace/ws_huchunxu/src/ros_exploring/my_mobilearm/my_gazebo/world/nine_highdesk.world");//worlds/empty.world
+    gazebo::physics::WorldPtr world = gazebo::loadWorld("/home/zhjd/workspace/ws_huchunxu/src/ros_exploring/my_mobilearm/ASLAM_gazebo_world/world/nine_highdesk.world");//worlds/empty.world
     gazebo::physics::Model_V models = world->Models();
     
 
